@@ -3,14 +3,65 @@ title: "Project Deliverable Methadology"
 output: html_document
 ---
 
+# The first task is to install the depmixS4 and quantmod libraries and then import them into R. 
+# We set a seed to allow for reproduciblity of results:
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library('depmixS4')
+library('quantmod')
 ```
-# Text
+
+## Using real financial data
+
+# The goal of the Hidden Markov Model will be to identify when the regime has switched from bullish to bearish and vice # versa. But unlike the simulated data set we don't know the number of regimes states that exsist and the distribution family our data belongs to. This is a unsupervised learning challenge since the number of states is not known and the # data is not labeled. Our initial estimate of the number of regime states, we need to consider the assest class, trading manner for the assest and the time period chosen. 
+
+# We will be using the S&P500 returns from 2004 onwards. This data set is from the quantmod library. 
 
 
-```{r}
-asset_1 <- rnorm(1,0,1)
-
+```{r Data, echo=TRUE,eval=TRUE,message=FALSE}
+getSymbols( "^GSPC", from="2004-01-01" )
+Rets = diff( log( Cl( GSPC ) ) )
+returns = as.numeric(Rets)
 ```
+
+## Plotting our Time Series
+
+```{r Plot, echo=TRUE,eval=TRUE}
+plot(Rets)
+```
+
+# From the plot above we can see that the time series experiences some sharp and large deviations at different times. The time series seems to be centered around zero. The variance seems to fluctuation around 2008, 2010, 2011 and 2020. 
+
+# Now we want to identify all the switches between regime states.
+
+## Fitting  Hidden Markov Model
+
+# At this stage we will make an initial estimate, there exists two regime states, "bullish" and "bearish" states. These two states represent the performance/behaviour of the returns. An HMM can be fitted using the Expectation Maximisation algorithm, the number of states is set to two and family of distributions set as gaussian. We consider the posterior probabilities of being in a particular regime state. We compare compared the posterior probabilities with the returns.
+
+```{r Fitting,eval=TRUE,echo=TRUE}
+hmm <- depmix(returns ~ 1, family = gaussian(), nstates = 2, data=data.frame(returns=returns))
+hmm_fit <- fit(hmm, verbose = FALSE)
+post_probs <- posterior(hmm_fit)
+layout(1:2)
+plot(Rets)
+matplot(post_probs[,-1], type='l', main='Regime Posterior Probabilities', ylab='Probability')
+legend(x='bottomleft', c('Regime #1','Regime #2'), fill=1:2, bty='n')
+```
+# Hidden markov model split the time series into two regime and identified where each regime exists. Before 2007 the returns were calmer and hence the Hidden Markov Model has given high posterior probability to Regime #1 for this period. However between 2007-2009 the returns were incredibly volatile due to the sub-prime crisis. The returns became calmer in 2010 but additional volatility occurred in 2011.
+
+## Fitting  Hidden Markov Model with 3 Regime states
+
+# Lets consider fitting the Hidden Markov Model but now setting the number of regime states to three and analyse the results.
+
+```{r Fitting3 ,eval=TRUE,echo=TRUE}
+hmm <- depmix(returns ~ 1, family = gaussian(), nstates = 3, data=data.frame(returns=returns))
+hmm_fit <- fit(hmm, verbose = FALSE)
+post_probs <- posterior(hmm_fit)
+layout(1:2)
+plot(Rets)
+matplot(post_probs[,-1], type='l', main='Regime Posterior Probabilities', ylab='Probability')
+legend(x='bottomleft', c('Regime #1','Regime #2', 'Regime #3'), fill=1:3, bty='n')
+```
+
+# The plot is tricky to read but we can see that the regime exsist very close to each other. Since the model considers three regimes states, this leads to a switching behaviour between regimes. Choosing the initial number of states to apply is a challenging task, so we need to do data exporation before fiiting the model to produce better results.
 
