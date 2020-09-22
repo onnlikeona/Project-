@@ -6,11 +6,11 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-asset_1 <- rnorm(1,0,1)
+# Text
 
 
 ```{r}
+asset_1 <- rnorm(1,0,1)
 
 ```
 
