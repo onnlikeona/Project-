@@ -7,6 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+asset_1 <- rnorm(1,0,1)
 
 
 ```{r}
