@@ -3,8 +3,7 @@ title: "Project Deliverable Methadology"
 output: html_document
 ---
 
-# The first task is to install the depmixS4 and quantmod libraries and then import them into R. 
-# We set a seed to allow for reproduciblity of results:
+# The first task is to install the depmixS4 and quantmod libraries and then import them into R. We set a seed to allow for reproduciblity of results:
 
 ```{r setup, include=FALSE}
 library('depmixS4')
