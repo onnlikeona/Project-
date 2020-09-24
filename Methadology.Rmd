@@ -26,10 +26,9 @@ We will now apply the Hidden Markov Model to simulated dataset that has regime s
 
 The simulated asset returns will be generated from a normal distribution with parameters corresponding to the market regime, each of which will either be a bullish or bearish market regime. In a bullish market, it is expected that the value of asset returns will rise. As such, we will assume that asset returns that fall under this regime will be normally distributed with a positive mean and low variance. Conversely, in a bearish market, asset returns are expected to decrease and we will assume that asset returns under this regime will be normally distributed with a negative mean and high variance. The five market regimes will placed these on the same time path. The use of the model will then be to detect where the market regime shifts from bullish to bearish and vice versa.
 
-## Application
+## Model Fitting
 
 Two market regimes will initally be simultaed. Each kth regime will have N_k days of the corresponding asset returns. In our example, we will let k = 5 and N_k be between 50 and 150 days. Asset returns under the bull market will be distributed as N(0.1, 0.1) while those of the bear market will be distributed as N(-0.05, 0.2). The parameters are assigned as follows in the code:
-
 
 ```{r}
 
@@ -59,7 +58,36 @@ market_bull_3 <- rnorm( days[3], bull_mean, bull_var )
 market_bear_4 <- rnorm( days[4], bear_mean, bear_var ) 
 market_bull_5 <- rnorm( days[5], bull_mean, bull_var )
 ```
-We will now create true regime states and the final list  of asset returns, assigning a value of 1 for bullish market regimes and 2 for bearish ones.
+We will now create true regime states and the final list  of asset returns, assigning a value of 1 for bullish market regimes and 2 for bearish ones:
+
+```{r}
+# List of true regime states and full returns list
+true_regimes <- c( rep(1,days[1]), rep(2,days[2]), rep(1,days[3]), rep(2,days[4]), rep(1,days[5]))
+returns <- c( market_bull_1, market_bear_2, market_bull_3, market_bear_4, market_bull_5)
+```
+If we plot the returns, we can clearly see the changes in mean and variance between the regime shifts:
+
+```{r}
+plot(returns, type="l", xlab='', ylab="Returns") 
+```
+At this stage, we can now fit the model with two market regimes:
+
+```{r}
+# Fit the Hidden Markov Model
+hmm <- depmix(returns ~ 1, family = gaussian(), nstates = 2, data=data.frame(returns=returns))
+hmmfit <- fit(hmm, verbose = FALSE)
+```
+Upon fitting the model, it is now possible to plot the probabilities of being in a particular regime stae given the asset returns (i.e. the posterior probabilities):
+
+```{r}
+# The true regimes and the posterior probabilities of the regimes
+post_probs <- posterior(hmmfit)
+layout(1:2)
+plot(post_probs$state, type='s', main='True Regimes', xlab='', ylab='Regime')
+matplot(post_probs[,-1], type='l', main='Regime Posterior Probabilities', ylab='Probability')
+legend(x='topright', c('Bull','Bear'), fill=1:2, bty='n')
+```
+The figure above shows that the model peforms well in correctly identifying the market regimes although not perfectly.
 
 
 
