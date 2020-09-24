@@ -30,7 +30,37 @@ The simulated asset returns will be generated from a normal distribution with pa
 
 Two market regimes will initally be simultaed. Each kth regime will have N_k days of the corresponding asset returns. In our example, we will let k = 5 and N_k be between 50 and 150 days. Asset returns under the bull market will be distributed as N(0.1, 0.1) while those of the bear market will be distributed as N(-0.05, 0.2). The parameters are assigned as follows in the code:
 
+
 ```{r}
+
+# Parameters for the bull and bear market returns
+Nk_lower <- 50
+Nk_upper <- 150
+bull_mean <- 0.1
+bull_var <- 0.1
+bear_mean <- -0.05
+bear_var <- 0.2
+
+```
+
+The N_k values are then randomly chosen:
+
+```{r}
+# Number of days for each market regime
+days <- replicate(5, sample(Nk_lower:Nk_upper, 1))
+```
+The asset returns corresponding to each of the kth regimes are randomly generated:
+
+```{r}
+# Bull and bear markets returns
+market_bull_1 <- rnorm( days[1], bull_mean, bull_var ) 
+market_bear_2 <- rnorm( days[2], bear_mean, bear_var ) 
+market_bull_3 <- rnorm( days[3], bull_mean, bull_var ) 
+market_bear_4 <- rnorm( days[4], bear_mean, bear_var ) 
+market_bull_5 <- rnorm( days[5], bull_mean, bull_var )
+```
+We will now create true regime states and the final list  of asset returns, assigning a value of 1 for bullish market regimes and 2 for bearish ones.
+
 
 
 # The first task is to install the depmixS4 and quantmod libraries and then import them into R. We set a seed to allow for reproduciblity of results:
