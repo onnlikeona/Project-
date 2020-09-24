@@ -22,7 +22,16 @@ The Hidden Markov Model is based on the concept of a Markov Model. A Markov Mode
 
 # Simulated Data 
 
-We will now apply the Hidden Markov Model to simulated dataset that has regime shifts, in order to see how the model performs in detecting these them. Five separate market regimes will be simulated as well as the corresponding asset returns. We will then infer posterior probabilities   
+We will now apply the Hidden Markov Model to simulated dataset that has regime shifts, in order to see how the model performs in detecting these them. Five separate market regimes will be simulated as well as the corresponding asset returns. We will then infer the probability of being a particular regime state given the sequence of asset returns.
+
+The simulated asset returns will be generated from a normal distribution with parameters corresponding to the market regime, each of which will either be a bullish or bearish market regime. In a bullish market, it is expected that the value of asset returns will rise. As such, we will assume that asset returns that fall under this regime will be normally distributed with a positive mean and low variance. Conversely, in a bearish market, asset returns are expected to decrease and we will assume that asset returns under this regime will be normally distributed with a negative mean and high variance. The five market regimes will placed these on the same time path. The use of the model will then be to detect where the market regime shifts from bullish to bearish and vice versa.
+
+## Application
+
+Two market regimes will initally be simultaed. Each kth regime will have N_k days of the corresponding asset returns. In our example, we will let k = 5 and N_k be between 50 and 150 days. Asset returns under the bull market will be distributed as N(0.1, 0.1) while those of the bear market will be distributed as N(-0.05, 0.2). The parameters are assigned as follows in the code:
+
+```{r}
+
 
 # The first task is to install the depmixS4 and quantmod libraries and then import them into R. We set a seed to allow for reproduciblity of results:
 
