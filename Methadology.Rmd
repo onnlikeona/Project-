@@ -7,10 +7,11 @@ output:
   pdf_document: default
 toc: yes
 ---
-```{r}
+```{r echo=FALSE, eval=TRUE, message=FALSE}
 
 library('depmixS4')
 library('quantmod')
+library('knitr')
 set.seed(1)
 ```
 
@@ -28,7 +29,11 @@ for a considerable period of time before it's subject to another abrupt change. 
 
 The Hidden Markov Model is based on the concept of a Markov Model. A Markov Model models the probability of moving from one state to another given the current state and disregarding the previous states. This is knwon as the Markov property and is said to be 'memoryless'. The Hidden Markov Model will link the observations to the underlying states under the Markov property. In our context, the observations are the asset returns which are visible and the states are the market regimes which are hidden. The figure below illustrates this with the orange bubbles being the states (market regimes) and the blue bubbles being the observations (asset returns):
 
-[insert image]
+```{r echo=FALSE}
+include_graphics("C:/Users/student/Downloads/qs-hmm-state-model.png")
+
+```
+
 
 The observations (blue bubbles) are as a result of the hidden process that's occuring between the states (orange bubbles) as shown by the arrows. What we want the model to achieve is to indicate to us when the transition from one orange bubble to another actually happened. This will help in giving us insight on why an observation abruptly changed. The model can also help in indicating impending shifts, but this is beyond the scope of our project. 
 
@@ -56,13 +61,13 @@ bear_var <- 0.2
 
 The N_k values are then randomly chosen:
 
-```{r}
+```{r message=FALSE}
 # Number of days for each market regime
 days <- replicate(5, sample(Nk_lower:Nk_upper, 1))
 ```
 The asset returns corresponding to each of the kth regimes are randomly generated:
 
-```{r}
+```{r message=FALSE}
 # Bull and bear markets returns
 market_bull_1 <- rnorm( days[1], bull_mean, bull_var ) 
 market_bear_2 <- rnorm( days[2], bear_mean, bear_var ) 
@@ -72,26 +77,26 @@ market_bull_5 <- rnorm( days[5], bull_mean, bull_var )
 ```
 We will now create true regime states and the final list  of asset returns, assigning a value of 1 for bullish market regimes and 2 for bearish ones:
 
-```{r}
+```{r message=FALSE}
 # List of true regime states and full returns list
 true_regimes <- c( rep(1,days[1]), rep(2,days[2]), rep(1,days[3]), rep(2,days[4]), rep(1,days[5]))
 returns <- c( market_bull_1, market_bear_2, market_bull_3, market_bear_4, market_bull_5)
 ```
 If we plot the returns, we can clearly see the changes in mean and variance between the regime shifts:
 
-```{r}
+```{r message=FALSE}
 plot(returns, type="l", xlab='', ylab="Returns") 
 ```
 At this stage, we can now fit the model with two market regimes:
 
-```{r}
+```{r message=FALSE}
 # Fit the Hidden Markov Model
 hmm <- depmix(returns ~ 1, family = gaussian(), nstates = 2, data=data.frame(returns=returns))
 hmmfit <- fit(hmm, verbose = FALSE)
 ```
 Upon fitting the model, it is now possible to plot the probabilities of being in a particular regime stae given the asset returns (i.e. the posterior probabilities):
 
-```{r}
+```{r message=FALSE}
 # The true regimes and the posterior probabilities of the regimes
 post_probs <- posterior(hmmfit)
 layout(1:2)
@@ -99,7 +104,7 @@ plot(post_probs$state, type='s', main='True Regimes', xlab='', ylab='Regime')
 matplot(post_probs[,-1], type='l', main='Regime Posterior Probabilities', ylab='Probability')
 legend(x='topright', c('Bull','Bear'), fill=1:2, bty='n')
 ```
-The figure above shows the plot of the true five market regimes having a Regime value of 1 or 2 corresponding to bullish and bearsih markets resectively, as explained before. This value is assigned to each asset return which has a corresponding index indicating the time measurement used; which in this case is the nth day. Below this plot is a plot showing the posterior probalities which is generatd by the model. The plot llustrates the probaibility of being in a particular regime given the sequence of asset returns, as indicated by the index. If for instance we consider asset returns approximately before the 80th occurence, we would say that the posterior probability of being in a bear market (the red coloured line) is 1, and 0 for being in a bull market (the blue coloured line). When this gets inverted at approximately the 80th index, this would indicate that a regime shift had occured upon the 80th day in the market. We would say that the model performed well if the shape of its posterior probability plot resembles the shape of the true regime plot. As we can see on the figure, the model has performed well. The model does display a lag in identifying the third regime shift at around the 180th day but overall it has correctly identified the shifts.
+The figure above shows that the model peforms well in correctly identifying the market regimes although not perfectly.
 
 
 
@@ -118,7 +123,7 @@ returns = as.numeric(Rets)
 
 ### Plotting our Time Series
 
-```{r Plot, echo=TRUE,eval=TRUE}
+```{r Plot, echo=TRUE,eval=TRUE, message=FALSE}
 plot(Rets)
 ```
 
@@ -130,7 +135,7 @@ From the plot above we can see that the time series experiences some sharp and l
 
 At this stage we will make an initial estimate, there exists two regime states, "bullish" and "bearish" states. These two states represent the performance/behaviour of the returns. An HMM can be fitted using the Expectation Maximisation algorithm, the number of states is set to two and family of distributions set as gaussian. We consider the posterior probabilities of being in a particular regime state. We compare compared the posterior probabilities with the returns.
 
-```{r Fitting,eval=TRUE,echo=TRUE}
+```{r Fitting,eval=TRUE,echo=TRUE, message=FALSE}
 hmm <- depmix(returns ~ 1, family = gaussian(), nstates = 2, data=data.frame(returns=returns))
 hmm_fit <- fit(hmm, verbose = FALSE)
 post_probs <- posterior(hmm_fit)
@@ -146,7 +151,7 @@ The Hidden markov model split the time series into two regime and identified whe
 
 # Lets consider fitting the Hidden Markov Model but now setting the number of regime states to three and analyse the results.
 
-```{r Fitting3 ,eval=TRUE,echo=TRUE}
+```{r Fitting3 ,eval=TRUE,echo=TRUE, message=FALSE}
 hmm <- depmix(returns ~ 1, family = gaussian(), nstates = 3, data=data.frame(returns=returns))
 hmm_fit <- fit(hmm, verbose = FALSE)
 post_probs <- posterior(hmm_fit)
@@ -165,7 +170,7 @@ Above we made use of Hidden Markov Models to detect changes in regime states. No
 ## Simulated Data
 
 We start off by simulating our data:
-```{r Simulated,eval=TRUE,echo=FALSE}
+```{r Simulated,eval=TRUE,echo=FALSE, message=FALSE}
 days <- replicate(5, sample(50:100,1))
 market_bull_1 <- rnorm( days[1], 0.1,0.1) 
 market_bear_2 <- rnorm( days[2], -0.05,0.2) 
@@ -181,7 +186,7 @@ plot(returns, type="l", ylab="Returns")
 ```
 We simulate market returns that switch between a "bullish" regime state to a "bearish" regime state as before with HMM. Therefore there are only two regime states in our data. Our returns in the "bullish" regime state are from a normal distribution with a mean of 0.1 and a varuance of 0.1. Our returns in the "bearish" regime state are from a normal distribution with a mean of -0.05 and a varuance of 0.2. We would like the STARS function to detect when the returns switch between regime states.
 
-```{r echo=TRUE,eval=TRUE}
+```{r echo=FALSE,eval=TRUE, message=FALSE}
 stars<- function(y=c(rnorm(50), rnorm(50,2,1)), L=20, p=0.05, h=1,  AR1red="none", prewhitening = F) {
   
   
@@ -653,14 +658,13 @@ From the plot above we can see that the STARS method identifies when there is a 
 
 We will make use of the same S&P500 data as used for the Hidden Markov Model:
 
-``` {r}
+``` {r echo = FALSE, message=FALSE}
 getSymbols( "^GSPC", from="2004-01-01" )
 Rets = diff( log( Cl( GSPC ) ) )
 returns = as.numeric(Rets)
 names(returns) <- seq(1900:(1900+(length(returns)-1)))
 years <- seq(1900:(1900+(length(returns)-1)))
 shift <- stars(returns)
-pl
 plot.stars(shift,years)
 ```
 
