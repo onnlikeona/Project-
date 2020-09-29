@@ -165,7 +165,9 @@ The plot is tricky to read but we can see that the regime exists very close to e
 
 # STARS Method
 
-Above we made use of Hidden Markov Models to detect changes in regime states. Now lets use another meothd called STARS # to detect these changes.
+We will now look at the STARS method to detect market regime shifts. For this report we are going to consider a shift in the mean as outlined by Rodionov. A very brief summary of how the method works follows. We firstly calculate the mean for for a particular cutoff period. The cutoff is the period of time that we believe should constitute a regime, according to the context. We then recalculate the mean but with the next observation in our time series included. If the inclusion of this observation changes the previous mean siginificantly, that time point (eg. t2) is flagged as a potential regime shift. To confirm that this time point is indeed indicative of a regime shift, we calculate the RSI for each observation following our potential time point (t2). If the RSI changes signs for any subsequent observations (eg. if the RSI for t2 is 0.5 and for t3 -0.5) within a certain cutoff, then the potential time point (t2) is not considered to be indicative of a regime shift.
+
+The cutoff is the only parameter that we need to define for our example. The default pvalue for the t-test is 0.05. To  make the plots easier to analyse, the RSI plot only displays the RSI values of potential time points. It will not diplay the RSI values that are calculated after a potential time point. RSI values of potential time points that later turned out to be not be regime shift timepoint (due to the RSI changing signs down the line, within the cutoff period) will also not be displayed. As such, the number of RSI bars indicating the RSI values will be equal to the number of regime shifts the model has predicted.
 
 ## Simulated Data
 
@@ -656,7 +658,7 @@ From the plot above we can see that the STARS method identifies when there is a 
 
 ## Real Data
 
-We will make use of the same S&P500 data as used for the Hidden Markov Model:
+We will make use of the same S&P500 data as used for the Hidden Markov Model. As this data contains daily observations, we will use a cutoff of 30 days. The plot is seen below:
 
 ```{r}
 final <- data.frame(data=index(GSPC), GSPC)
