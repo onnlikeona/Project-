@@ -661,8 +661,8 @@ From the plot above we can see that the STARS method identifies when there is a 
 We will make use of the same S&P500 data as used for the Hidden Markov Model. As this data contains daily observations, we will use a cutoff of 30 days. The plot is seen below:
 
 ```{r}
-final <- data.frame(data=index(GSPC), GSPC)
-finalfinal <- final[,-c(1, 2, 3)]
+final <- data.frame(data=index(GSPC), GSPC) # Converting the xts object to data-frame
+finalfinal <- final[,-c(1, 2, 3)] 
 GSPC_closed <- finalfinal[,c(1, 5)]
 Retsfinal <- diff(log(GSPC_closed[,2]))
 Retsfinale <- c(0, Retsfinal)
