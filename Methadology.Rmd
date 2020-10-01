@@ -3,12 +3,11 @@ title: "Application of Methods"
 author: "Onalerona Letebele"
 date: "24/09/2020"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 toc: yes
 ---
 ```{r echo=FALSE, eval=TRUE, message=FALSE}
-
 library('depmixS4')
 library('quantmod')
 library('knitr')
@@ -32,7 +31,7 @@ for a considerable period of time before it's subject to another abrupt change. 
 The Hidden Markov Model is based on the concept of a Markov Model. A Markov Model models the probability of moving from one state to another given the current state and disregarding the previous states. This is knwon as the Markov property and is said to be 'memoryless'. The Hidden Markov Model will link the observations to the underlying states under the Markov property. In our context, the observations are the asset returns which are visible and the states are the market regimes which are hidden. The figure below illustrates this with the orange bubbles being the states (market regimes) and the blue bubbles being the observations (asset returns):
 
 ```{r echo=FALSE}
-include_graphics("C:/Users/student/Downloads/qs-hmm-state-model.png")
+include_graphics("C:/Users/ndumi/OneDrive - University of Cape Town/THE GRIND/ACADEMIC GRIND/2020/PROJECT/Github/rstars-master/rstars-master")
 
 ```
 
@@ -81,18 +80,19 @@ We will now create true regime states and the final list  of asset returns, assi
 ```{r message=FALSE}
 # List of true regime states and full returns list
 true_regimes <- c( rep(1,days[1]), rep(2,days[2]), rep(1,days[3]), rep(2,days[4]), rep(1,days[5]))
-returns <- c( market_bull_1, market_bear_2, market_bull_3, market_bear_4, market_bull_5)
+sim_returns <- c( market_bull_1, market_bear_2, market_bull_3, market_bear_4, market_bull_5)
+
 ```
 If we plot the returns, we can clearly see the changes in mean and variance between the regime shifts:
 
 ```{r message=FALSE}
-plot(returns, type="l", xlab='', ylab="Returns") 
+plot(sim_returns, type="l", xlab="days", ylab="Returns",main = "Simulated Markert Returns Over a Number of Days ") 
 ```
 At this stage, we can now fit the model with two market regimes:
 
 ```{r message=FALSE}
 # Fit the Hidden Markov Model
-hmm <- depmix(returns ~ 1, family = gaussian(), nstates = 2, data=data.frame(returns=returns))
+hmm <- depmix(sim_returns ~ 1, family = gaussian(), nstates = 2, data=data.frame(returns=sim_returns))
 hmmfit <- fit(hmm, verbose = FALSE)
 ```
 Upon fitting the model, it is now possible to plot the probabilities of being in a particular regime stae given the asset returns (i.e. the posterior probabilities):
@@ -105,7 +105,7 @@ plot(post_probs$state, type='s', main='True Regimes', xlab='', ylab='Regime')
 matplot(post_probs[,-1], type='l', main='Regime Posterior Probabilities', ylab='Probability')
 legend(x='topright', c('Bull','Bear'), fill=1:2, bty='n')
 ```
-The True Regimes plot above shows the simulated regimes with a Regime Value of 1 and 2 indicating bullish and bearish markets respectively. The x axis indicates the index of the asset returns, which will the number of days. The Regime Posterior Probabilities plot gives the posterior probability of being in one of the two market regimes at any given time point. We can see that the model has correctly identified the number of regime shifts. However, the model lagged in quickly identifying the second regime shift around the 150th day, as well as the fourth shift at around the 270th day. Overall, the model performed well. One the reasons for this however, is that we knew the number of regime states. This will not be true for real time series data, which is what we will look at next.
+The True Regimes plot above shows the simulated regimes with a Regime Value of 1 and 2 indicating bullish and bearish markets respectively. The Regime Posterior Probabilities plot gives the posterior probability of being in one of the two market regimes at any given time point. We can see that the model has correctly identified the number of regime shifts. However, the model lagged in quickly identifying the second regime shift around the 150th day, as well as the fourth shift at around the 270th day. Overall, the model performed well. One the reasons for this however, is that we knew the number of regime states. This will not be true for real time series data, which is what we will look at next.
 
 
 
@@ -178,7 +178,7 @@ The plot above is our simulated time series with five regime shifts between the 
 
 
 ```{r Fit4,echo=TRUE,eval=TRUE,message=FALSE}
-source("rSTARS.R")
+source('rSTARS.R', local = T)
 Time <- as.character(seq(as.Date("2004-01-01"),as.Date("2004-12-11"),by = "day"))
 sim_returns_data <- data.frame(cbind(Time, sim_returns))
 sim_returns_data$sim_returns <- as.numeric(sim_returns_data$sim_returns)
