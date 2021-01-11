@@ -1,4 +1,4 @@
-# Simulated Results (including the precision rate bar plot)
+# Simulated Results (including the precision rate and standard deviation bar plots)
 
 # Load Libraries ------------------------------------------------------------------------------------------
 
