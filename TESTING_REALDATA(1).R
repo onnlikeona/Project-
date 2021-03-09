@@ -11,6 +11,8 @@ library(quadprog)
 library(gdata)
 library(quantmod)
 library(depmixS4)
+library(hsmm)
+citation("hsmm")
 setwd("~/Documents/2020/Semester 2/Project/Application of Methods/REALDATA")
 #######################
 LOADING_DATA_AND_FUNCTION
